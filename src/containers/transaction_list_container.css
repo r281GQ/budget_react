@@ -1,0 +1,9 @@
+.transaction-list {
+  padding-top: 5px;
+}
+
+.loading {
+  text-align: center;
+  margin: auto;
+  vertical-align: middle;
+}
