@@ -1,5 +1,4 @@
 import axios from "axios";
-import * as _ from "lodash";
 
 import {
   WRITE_ACCOUNT,
@@ -12,11 +11,10 @@ import {
   DISMISS_MESSAGE,
   WRITE_GROUPING,
   WRITE_GROUPINGS,
-  WIPE_GROUPING,
+  WIPE_GROUPINGS,
   REMOVE_ACCOUNT,
   REMOVE_GROUPING,
   REMOVE_TRANSACTION,
-  SELECT_GROUPING,
   WRITE_TRANSACTION,
   WRITE_TRANSACTIONS,
   WIPE_TRANSACTIONS,
@@ -171,7 +169,7 @@ const getGroupings = () => (dispatch, getState) => {
   dispatch({ type: INIT_API });
   axios(config)
     .then(response => {
-      dispatch({ type: WIPE_GROUPING });
+      dispatch({ type: WIPE_GROUPINGS });
       dispatch({ type: WRITE_GROUPINGS, payload: response.data });
       dispatch({ type: CLOSE_API });
     })
@@ -337,7 +335,7 @@ const initialFetch = () => (dispatch, getState) => {
       dispatch({ type: WIPE_ACCOUNTS });
       dispatch({ type: WRITE_ACCOUNTS, payload: response[0].data });
 
-      dispatch({ type: WIPE_GROUPING });
+      dispatch({ type: WIPE_GROUPINGS });
       dispatch({ type: WRITE_GROUPINGS, payload: response[1].data });
 
       dispatch({ type: WIPE_BUDGETS });
@@ -568,7 +566,6 @@ const getBudgets = () => (dispatch, getState) => {
     });
 };
 
-
 //TODO: doesnt need getTransactions neithor here noe in account grouping deleteions
 const deleteBudget = _id => (dispatch, getState) => {
   if (!getState().auth.authenticated) return;
@@ -593,7 +590,7 @@ const deleteBudget = _id => (dispatch, getState) => {
         payload: `Budget was removed!`
       });
       dispatch({ type: CLOSE_API });
-    //   return axios(getTransactionsConfigCreator(getState));
+      //   return axios(getTransactionsConfigCreator(getState));
     })
     // .then(response => {
     //   dispatch({ type: WIPE_TRANSACTIONS });
@@ -608,7 +605,7 @@ const deleteBudget = _id => (dispatch, getState) => {
     });
 };
 
-const updateBudget = ({_id, name }) => (dispatch, getState) => {
+const updateBudget = ({ _id, name }) => (dispatch, getState) => {
   if (!getState().auth.authenticated) return;
   dispatch({ type: INIT_API });
 

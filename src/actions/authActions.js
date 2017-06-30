@@ -1,19 +1,10 @@
 import axios from "axios";
 import { push } from "react-router-redux";
 
-import { RESTORE_TO_INITIAL_STATE } from './modelActions';
-
-import {
-  getAccounts,
-  getGroupings,
-  getTransactions,
-  initialFetch
-} from "./../actionCreators/modelActionCreators";
+import { RESTORE_TO_INITIAL_STATE } from "./modelActions";
+import { initialFetch } from "./../actionCreators/modelActionCreators";
 import { saveToken, getToken, removeToken } from "./../services/localStorage";
-import {
-  CREATE_ERROR_MESSAGE,
-  CREATE_SUCCESS_MESSAGE
-} from "./../actions/modelActions";
+import { CREATE_SUCCESS_MESSAGE } from "./../actions/modelActions";
 
 const getMe = () => (dispatch, getState) => {
   dispatch({ type: INIT_AUTH });
@@ -76,7 +67,7 @@ const initAuth = userInfo => {
         saveToken(response.headers["x-auth"]);
         dispatch({
           type: CREATE_SUCCESS_MESSAGE,
-          payload: `Welcome back ${name}`
+          payload: `Welcome back ${name}!`
         });
         dispatch({ type: CLOSE_AUTH });
         dispatch(push("/transaction"));
@@ -90,7 +81,7 @@ const initAuth = userInfo => {
 
 const initLogOut = () => dispatch => {
   removeToken();
-  dispatch({type: RESTORE_TO_INITIAL_STATE});
+  dispatch({ type: RESTORE_TO_INITIAL_STATE });
   dispatch({ type: INIT_LOGOUT });
 };
 

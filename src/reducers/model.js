@@ -1,4 +1,3 @@
-import axios from "axios";
 import * as _ from "lodash";
 import uuid from "uuid";
 
@@ -12,11 +11,10 @@ import {
   CREATE_SUCCESS_MESSAGE,
   CREATE_ERROR_MESSAGE,
   DISMISS_MESSAGE,
-  WIPE_GROUPING,
+  WIPE_GROUPINGS,
   WRITE_GROUPING,
   REMOVE_ACCOUNT,
   REMOVE_GROUPING,
-  SELECT_GROUPING,
   WRITE_TRANSACTION,
   WRITE_TRANSACTIONS,
   WIPE_TRANSACTIONS,
@@ -259,8 +257,6 @@ const handleRemoveBudget = (state, payload) => {
   return newState;
 };
 
-
-
 const model = (state = initialModelState, { type, payload }) => {
   switch (type) {
     case RESTORE_TO_INITIAL_STATE:
@@ -295,7 +291,7 @@ const model = (state = initialModelState, { type, payload }) => {
       return handleWriteGroupings(state, payload);
     case WIPE_ACCOUNTS:
       return handleWipeAccount(state);
-    case WIPE_GROUPING:
+    case WIPE_GROUPINGS:
       return handleWipeGrouping(state);
     case WIPE_BUDGETS:
       return handleWipeBudget(state);

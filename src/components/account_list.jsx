@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 import * as _ from "lodash";
+
 import EditAccountComponent from './edit-account-component';
 
-const AccountListComponent = ({ accounts, state, handlers }) => {
+const AccountList = ({ accounts, state, handlers }) => {
   return (
     <ListGroup>
       {_.map(accounts, account =>
@@ -16,4 +17,4 @@ const AccountListComponent = ({ accounts, state, handlers }) => {
   );
 };
 
-export default AccountListComponent;
+export default AccountList;

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import {Route} from 'react-router';
 import { connect } from "react-redux";
 import { reduxForm, Field } from "redux-form";
 import { ListGroup, ListGroupItem, Button, FormControl } from "react-bootstrap";
@@ -12,7 +13,7 @@ import {
 import * as _ from "lodash";
 import CreateAccountFormComponent from "./../components/createAccountFormComponent";
 import Spinner from "react-spinkit";
-import AccountListComponent from "./../components/account-list-component";
+import AccountList from "./../components/account_list";
 
 class AccountContainer extends Component {
   constructor(props) {
@@ -33,7 +34,7 @@ class AccountContainer extends Component {
     if (!nextprops.authenticated) this.props.redirectToMain();
   }
 
-  renderCreateForm = () => {
+  renderCreateForm = ()=> () => {
     if (this.state.showCreateForm)
       return (
         <CreateAccountFormComponent
@@ -46,9 +47,23 @@ class AccountContainer extends Component {
     }
   };
 
-  renderAccountList = () =>
+  // renderCreateForm = () => {
+  //   if (this.state.showCreateForm)
+  //     return (
+  //       <CreateAccountFormComponent
+  //         submitHandler={this.onSubmitCreateHandler()}
+  //         cancelHandler={this.onCancelAccountCreate}
+  //       />
+  //     );
+  //   else {
+  //     return <Button onClick={this.onShowCreateForm}>Create Account</Button>;
+  //   }
+  // };
+
+
+  renderAccountList = () => () =>
     <div>
-      <AccountListComponent
+      <AccountList
         accounts={this.props.accounts}
         state={this.state}
         handlers={{
@@ -61,6 +76,21 @@ class AccountContainer extends Component {
         }}
       />
     </div>;
+  // renderAccountList = () =>
+  //   <div>
+  //     <AccountListComponent
+  //       accounts={this.props.accounts}
+  //       state={this.state}
+  //       handlers={{
+  //         onSubmitEditHandler: this.onSubmitEditHandler,
+  //         onEditFormDisabledHandler: this.onEditFormDisabledHandler,
+  //         onDeleteAccountHandler: this.onDeleteAccountHandler,
+  //         onHideDeleteConsentHandler: this.onHideDeleteConsentHandler,
+  //         onEditFormSelectedHandler: this.onEditFormSelectedHandler,
+  //         onShowDeleteConsentHandler: this.onShowDeleteConsentHandler
+  //       }}
+  //     />
+  //   </div>;
 
   prepareCreateAccountForDispatch = ({ name, initialBalance, currency }) => {
     this.props.createAccount({ name, initialBalance, currency });
@@ -117,9 +147,18 @@ class AccountContainer extends Component {
     if (this.props.loading) return <div><Spinner name="circle" /></div>;
 
     return (
-      <div>
-        {this.renderCreateForm()}
-        {this.renderAccountList()}
+
+      <div className="transaction-list">
+        <Route
+          exact
+          path="/account"
+          component={this.renderAccountList()}
+        />
+        <Route
+          exact
+          path="/account/new"
+          component={this.renderCreateForm()}
+        />
       </div>
     );
   }

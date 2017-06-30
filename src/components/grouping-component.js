@@ -1,15 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { reduxForm, Field } from "redux-form";
+import { reduxForm } from "redux-form";
 import { push } from "react-router-redux";
+import Spinner from "react-spinkit";
+
 import {
   createGrouping,
   updateGrouping,
   deleteGrouping
 } from "./../actionCreators/modelActionCreators";
-import { ListGroup, ListGroupItem, Button } from "react-bootstrap";
-import * as _ from "lodash";
-import Spinner from "react-spinkit";
 import GropingComponentList from "./grouping.list-component";
 import GroupingCreateComponent from "./grouping-create-component";
 

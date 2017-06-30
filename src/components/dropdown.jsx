@@ -9,29 +9,49 @@ const renderIcon = (item, selected) => {
     );
 };
 const renderMenuItemMessage = (title, item) => {
-  if (title === "Account")
-    return (
-      <span>
-        {item.name} {item.currentBalance}
-      </span>
-    );
+  switch (title) {
+    case "Accounts":
+      return (
+        <span>
+          {item.name} {item.currentBalance}
+        </span>
+      );
+    case "Groupings":
+      return (
+        <span>
+          {item.name}
+        </span>
+      );
+    case "BudgetPeriods":
+      return (
+        <span>
+          {item.name} {item.comulativeBalance}
+        </span>
+      );
+    default:
+      return "";
+  }
 };
 
 const DropDown = ({ title, collection, onClickHandler, selected }) => {
   return (
     <NavDropdown id={title} eventKey="title" title={title}>
-      {_.map(collection, item => {
-        return (
-          <MenuItem
-            key={item._id}
-            eventKey={item._id}
-            onClick={onClickHandler(item._id)}
-          >
-            {renderMenuItemMessage(title, item)}
-            {renderIcon(item, selected)}
+      {_.isEmpty(collection)
+        ? <MenuItem key="0" eventKey="0">
+            No items yet!
           </MenuItem>
-        );
-      })}
+        : _.map(collection, item => {
+            return (
+              <MenuItem
+                key={item._id}
+                eventKey={item._id}
+                onClick={onClickHandler(item._id)}
+              >
+                {renderMenuItemMessage(title, item)}
+                {renderIcon(item, selected)}
+              </MenuItem>
+            );
+          })}
     </NavDropdown>
   );
 };

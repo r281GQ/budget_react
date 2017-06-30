@@ -5,11 +5,8 @@ import {
   CLOSE_AUTH,
   LOGIN_SUCCES,
   LOGIN_FAILED,
-  INIT_LOGOUT,
-  PERSIST_ITEMS
+  INIT_LOGOUT
 } from "./../actions/authActions";
-
-import { saveToken, getToken } from "./../services/localStorage";
 
 const INITIAL_STATE = {
   failedAttempt: false,

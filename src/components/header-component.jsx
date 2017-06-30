@@ -1,35 +1,15 @@
 import React, { Component } from "react";
-import {
-  Nav,
-  NavItem,
-  NavDropdown,
-  FormGroup,
-  FormControl,
-  MenuItem,
-  Row,
-  Grid,
-  Col,
-  Alert,
-  Button
-} from "react-bootstrap";
+import Spinner from "react-spinkit";
+import { Nav } from "react-bootstrap";
+import { connect } from "react-redux";
+import { reduxForm } from "redux-form";
+
 import {
   initAuth,
   initLogOut,
   initSignUp,
   getMe
 } from "./../actions/authActions";
-import InputField from "./input-field";
-import { LinkContainer } from "react-router-bootstrap";
-import { Link } from "react-router-dom";
-import { connect } from "react-redux";
-import { reduxForm, Field } from "redux-form";
-import LogIn from "./login-component";
-import SignUp from "./signUp";
-import { disMissMessage } from "./../actionCreators/modelActionCreators";
-import totalBalance from "./../selectors/totalBalance";
-import * as _ from "lodash";
-import dateSelector from "./../selectors/date";
-import moment from "moment";
 import {
   applyDate,
   applyTerm,
@@ -37,15 +17,25 @@ import {
   applyGroupingSelection,
   applyBudgetSelection
 } from "./../actionCreators/filterActionCreators";
-import Spinner from "react-spinkit";
-import bps from './../selectors/currentBudgetPeriod';
-import DropDown from './dropdown';
+import dateSelector from "./../selectors/date";
+import totalBalance from "./../selectors/totalBalance";
+import currentBudgetPeriodsSelector from "./../selectors/currentBudgetPeriod";
+import { disMissMessage } from "./../actionCreators/modelActionCreators";
+import LogIn from "./log_in";
+import SignUp from "./sign_up";
+import DropDown from "./dropdown";
+import Months from "./months";
+import SearchBarButton from "./searh_bar_button";
+import SearchBar from "./search_bar";
+import Navigation from "./navigation";
+import LogoutButton from "./logut_button";
+import Balance from "./balance";
+import MessageBar from "./message_bar";
+import CreateButton from "./create_button";
 
 import "./heading.css";
 
 class HeaderComponent extends Component {
-  componentWillReceiveProps(nextprops) {}
-
   componentWillMount() {
     this.props.getMe();
   }
@@ -54,195 +44,82 @@ class HeaderComponent extends Component {
     super(props);
 
     this.state = {
-      logIn: true
+      logIn: true,
+      isSearchBarVisible: false
     };
   }
-  toggle = () => this.setState({ logIn: !this.state.logIn });
-  dimiss = id => this.props.dismiss(id);
 
-  logOut = () => this.props.logOut();
-  renderMSG = () =>
-    _.map(this.props.msgs, msg =>
-      <Alert bsStyle={msg.type} key={Math.random()}>
-        <p>
-          {msg.message}{" "}
-          <Button onClick={() => this.dimiss(msg._id)}>dismiss</Button>
-        </p>
-      </Alert>
-    );
-
-    selectAccount = _id => () => {this.props.selectAccount(_id)};
-
-  formatRoute = route => {
-    switch (route) {
-      case "/grouping":
-        return "Create new grouping";
-      case "/transaction":
-        return "Create new transaction";
-      case "/account":
-        return "Create account";
-      case "/new":
-        return "See transactions";
-      default:
-        return "Create account";
-    }
-  };
-
-  updateTerm = event => this.props.uppdateTerm(event.target.value);
-
-  assignHandler = () => () => "";
+  toggleBetweenLoginAndSignUp = () =>
+    this.setState({ logIn: !this.state.logIn });
 
   toggleSearch = () => {
-    this.props.uppdateTerm("");
-    this.setState({ search: !this.state.search });
-  };
-
-  renderSearchBar = () =>
-    this.state.search
-      ?
-          <input
-            className="form-control"
-            type="text"
-            onChange={this.updateTerm}
-            placeholder="Search in names and memos"
-          />
-
-
-      : <div />;
-
-      // renderSearchBar = () =>
-      //   this.state.search
-      //     ? <div className="input-group">
-      //         <input
-      //           className="form-control"
-      //           type="text"
-      //           onChange={this.updateTerm}
-      //           placeholder="Search in names and memos"
-      //         />
-      //         <span className="input-group-btn">
-      //           <button className="btn btn-default" type="button">Go!</button>
-      //         </span>
-      //       </div>
-      //     : <div />;
-
-  isSelected = _id => {
-    if (this.props.selectedAccount === _id)
-      return (
-        <span className="glyphicon glyphicon glyphicon-ok" aria-hidden="true" />
-      );
-    return "";
-  };
-
-  isSelectedG = _id => {
-    if (this.props.selectedGrouping === _id)
-      return (
-        <span className="glyphicon glyphicon glyphicon-ok" aria-hidden="true" />
-      );
-    return "";
-  };
-
-  isSelectedBud = _id => {
-    if (this.props.selectedBudget === _id)
-      return (
-        <span className="glyphicon glyphicon glyphicon-ok" aria-hidden="true" />
-      );
-    return "";
-  };
-
-  isSelectedD = _id => {
-    if (this.props.selectedDate === _id)
-      return (
-        <span className="glyphicon glyphicon glyphicon-ok" aria-hidden="true" />
-      );
-    return "";
+    this.props.updateTerm("");
+    this.setState({ isSearchBarVisible: !this.state.isSearchBarVisible });
   };
 
   logIn = formProps => {
     const { reset } = this.props;
     const { email, password } = formProps;
     this.props.logIn({ email, password });
-    // this.props.navigate('/transaction');
     reset();
   };
 
   signUp = formProps => {
-    const { email, password, name, reset } = formProps;
+    const { reset } = this.props;
+    const { email, password, name } = formProps;
     this.props.signUp({ email, password, name });
     reset();
   };
 
-  renderCreateButton = () => {
-
-    switch (this.props.currentRoute) {
-      case "/grouping":
-        return <NavItem eventKey={1}>
-          {this.formatRoute(this.props.currentRoute)}
-        </NavItem>;
-      case "/transaction":
-        return <LinkContainer to='/new'><NavItem eventKey={1}>
-          {this.formatRoute(this.props.currentRoute)}
-        </NavItem></LinkContainer>;
-      case "/account":
-        return <NavItem eventKey={1}>
-          {this.formatRoute(this.props.currentRoute)}
-        </NavItem>;
-      case "/new":
-        return <LinkContainer to='/transaction'><NavItem eventKey={1}>
-          {this.formatRoute(this.props.currentRoute)}
-        </NavItem></LinkContainer>;
-      // case _.includes(this.props.currentRoute, '/transaction/edit/'):
-      //   return <LinkContainer to='/new'><NavItem eventKey={1}>
-      //     {this.formatRoute(this.props.currentRoute)}
-      //   </NavItem></LinkContainer>;
-      default:
-        return <LinkContainer to='/new'><NavItem eventKey={1}>
-            {this.formatRoute(this.props.currentRoute)}
-          </NavItem></LinkContainer>;
-    }
-
-
-  }
-  // <NavItem eventKey={1}>
-  //   {this.formatRoute(this.props.currentRoute)}
-  // </NavItem>
   render() {
-    const { handleSubmit, pristine, reset, submitting } = this.props;
+    const { handleSubmit } = this.props;
 
-    if (!this.props.authenticated && !this.props.fetching && this.state.logIn) {
+    let unAnuthenticatedAndLogInSelected =
+      !this.props.authenticated &&
+      !this.props.isAuthenticating &&
+      this.state.logIn;
+
+    let unAnuthenticatedAndSignUpSelected =
+      !this.props.authenticated &&
+      !this.props.isAuthenticating &&
+      !this.state.logIn;
+
+    let beingAuthenticated = this.props.isAuthenticating;
+
+    let modelsBeingLoadedAndAuthenticated =
+      !this.props.isAuthenticating && this.props.loading;
+
+    if (unAnuthenticatedAndLogInSelected) {
       return (
         <div>
           <LogIn
             handleLogin={handleSubmit(this.logIn)}
             failedAttempt={this.props.failedAttempt}
-            toggleSignUp={this.toggle}
+            toggleSignUp={this.toggleBetweenLoginAndSignUp}
           />
         </div>
       );
     }
 
-    if (
-      !this.props.authenticated &&
-      !this.props.fetching &&
-      !this.state.logIn
-    ) {
+    if (unAnuthenticatedAndSignUpSelected) {
       return (
         <div>
           <SignUp
             handleSignup={handleSubmit(this.signUp)}
-            toggleLogIn={this.toggle}
+            toggleLogIn={this.toggleBetweenLoginAndSignUp}
           />
         </div>
       );
     }
 
-    if (this.props.fetching)
+    if (beingAuthenticated)
       return (
         <div className="loading">
           Authenticating<Spinner className="loading" name="circle" />
         </div>
       );
 
-    if (!this.props.fetching && this.props.loading)
+    if (modelsBeingLoadedAndAuthenticated)
       return (
         <div className="loading">
           Loading models<Spinner className="loading" name="circle" />
@@ -252,105 +129,58 @@ class HeaderComponent extends Component {
     return (
       <div>
         <Nav bsStyle="pills" activeKey={1}>
-          {this.renderCreateButton()}
-          <NavItem eventKey={8}>
-            Total Balance : {this.props.totalBalance}
-          </NavItem>
+          <CreateButton route={this.props.currentRoute} />
 
-          {this.props.currentRoute === '/transaction' ? <NavItem eventKey={8} onClick={this.toggleSearch}>
-            search
-          </NavItem> : ''}
+          <Balance balance={this.props.totalBalance} />
 
-          <NavDropdown id="accounts" eventKey={10} title="accounts">
+          <SearchBarButton
+            currentRoute={this.props.currentRoute}
+            onClickHandler={this.toggleSearch}
+          />
 
-            {_.map(this.props.accounts, account => {
-              return (
-                <MenuItem key={account._id}
-                  eventKey="4.4"
-                  onClick={() => {
-                    this.setState({ selectAccount: account._id });
-                    this.props.selectAccount(account._id);
-                  }}
-                >
-                  <span>{account.name} {account.currentBalance}</span>
-                  {this.isSelected( account._id)}
-                </MenuItem>
-              );
-            })}
-          </NavDropdown>
+          <DropDown
+            collection={this.props.accounts}
+            title="Accounts"
+            onClickHandler={this.props.selectAccount}
+            selected={this.props.selectedAccount}
+          />
 
-          <DropDown collection={this.props.accounts} title='Account' onClickHandler={this.selectAccount} selected = {this.props.selectedAccount}/>
+          <DropDown
+            collection={this.props.groupings}
+            title="Groupings"
+            onClickHandler={this.props.selectGrouping}
+            selected={this.props.selectedGrouping}
+          />
 
-          <NavDropdown id="groupings" eventKey={10} title="groupings">
+          <DropDown
+            collection={this.props.currentBudgetPeriods}
+            title="BudgetPeriods"
+            onClickHandler={this.props.selectBudget}
+            selected={this.props.selectedBudget}
+          />
 
-            {_.map(this.props.groupings, grouping => {
-              return (
-                <MenuItem key={grouping._id}
-                  eventKey="4.4"
-                  onClick={() => {
-                    this.props.selectGrouping(grouping._id);
-                  }}
-                >
-                  <span>{grouping.name} {grouping.type}</span>
-                  {this.isSelectedG(grouping._id)}
-                </MenuItem>
-              );
-            })}
-          </NavDropdown>
-            <NavDropdown id="bps" eventKey={10} title="bps" >
-              {_.map(this.props.curbps, bp => {
-                return (<MenuItem key={bp._id} onClick = {() => this.props.selectBudget(bp.budgetId)}
-                  eventKey="4.2">
-                {bp.name} {bp.comulativeBalance}
-                {this.isSelectedBud(bp.budgetId)}
-                </MenuItem>);
-              })}
-          </NavDropdown>
-          <NavDropdown id="7" eventKey="4" title="date">
+          <Months
+            collection={this.props.months}
+            title="Months"
+            onClickHandler={this.props.updateDate}
+            selected={this.props.selectedDate}
+          />
 
-            {_.map(this.props.dates, date => {
-              return (
-                <MenuItem key={date}
-                  eventKey="4.2"
-                  onClick={() => this.props.updateDate(date)}
-                >
-                  {date}
-                  {this.isSelectedD(date)}
-                </MenuItem>
-              );
-            })}
+          <Navigation name={this.props.user.name} />
 
-          </NavDropdown>
-          <NavDropdown id="3" eventKey="4" title={this.props.user.name}>
-
-            <LinkContainer to="/grouping">
-              <MenuItem eventKey="4.2">Groupings</MenuItem>
-            </LinkContainer>
-            <LinkContainer to="/budget">
-              <MenuItem eventKey="4.2">budget</MenuItem>
-            </LinkContainer>
-            <LinkContainer to="/new">
-              <MenuItem eventKey="4.4">new</MenuItem>
-            </LinkContainer>
-
-
-<LinkContainer to="/account">
-            <MenuItem eventKey="4.2">
-              account
-            </MenuItem>
-            </LinkContainer>
-
-            <LinkContainer to="/transaction">
-            <MenuItem eventKey="4.3">
-              transaction
-            </MenuItem>
-            </LinkContainer>
-
-          </NavDropdown>
-          <NavItem eventKey={1} onClick={this.logOut}>Loguut</NavItem>
+          <LogoutButton onClickHandler={this.props.logOut} />
         </Nav>
-        {this.renderSearchBar()}
-        {this.renderMSG()}
+        <SearchBar
+          isVisible={
+            this.state.isSearchBarVisible &&
+            this.props.currentRoute === "/transaction"
+          }
+          onChangeHandler={this.props.updateTerm}
+        />
+        <MessageBar
+          dismissHandler={this.props.dismissMessage}
+          messages={this.props.messages}
+        />
       </div>
     );
   }
@@ -360,41 +190,35 @@ const mapStateToProps = state => {
   return {
     authenticated: state.auth.authenticated,
     loading: state.model.isLoading,
-    fetching: state.auth.isLoading,
-    // fetching: true,
+    isAuthenticating: state.auth.isLoading,
+    failedAttempt: state.auth.failedAttempt,
     user: state.auth.user,
-    msgs: state.model.messages,
-    totalBalance: totalBalance(state),
+    messages: state.model.messages,
     accounts: state.model.accounts.data,
     groupings: state.model.groupings.data,
-    currentRoute: state.router.location.pathname,
     selectedAccount: state.filter.account,
     selectedGrouping: state.filter.grouping,
     selectedBudget: state.filter.budget,
     selectedDate: state.filter.date,
-    failedAttempt: state.auth.failedAttempt,
-    dates: dateSelector(state),
-    curbps: bps(state)
-    // msgState: state.model.isNewMessage
+    currentRoute: state.router.location.pathname,
+    totalBalance: totalBalance(state),
+    months: dateSelector(state),
+    currentBudgetPeriods: currentBudgetPeriodsSelector(state)
   };
 };
 
-//TODO: theres is no update in reducers
 const mapDispatchToProps = dispatch => {
   return {
-    updateSearchTerm: term => {
-      return dispatch({ type: "UPDATE", payload: term });
-    },
     logIn: userInfo => dispatch(initAuth(userInfo)),
     signUp: userInfo => dispatch(initSignUp(userInfo)),
     logOut: () => dispatch(initLogOut()),
-    dismiss: id => dispatch(disMissMessage(id)),
+    dismissMessage: id => () => dispatch(disMissMessage(id)),
     getMe: () => dispatch(getMe()),
-    updateDate: date => dispatch(applyDate(date)),
-    uppdateTerm: term => dispatch(applyTerm(term)),
-    selectAccount: _id => dispatch(applyAccountSelection(_id)),
-    selectGrouping: _id => dispatch(applyGroupingSelection(_id)),
-    selectBudget: _id => dispatch(applyBudgetSelection(_id))
+    updateDate: date => () => dispatch(applyDate(date)),
+    updateTerm: term => dispatch(applyTerm(term)),
+    selectAccount: _id => () => dispatch(applyAccountSelection(_id)),
+    selectGrouping: _id => () => dispatch(applyGroupingSelection(_id)),
+    selectBudget: _id => () => dispatch(applyBudgetSelection(_id))
   };
 };
 
