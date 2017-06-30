@@ -1,6 +1,8 @@
 import axios from "axios";
 import { push } from "react-router-redux";
 
+import { RESTORE_TO_INITIAL_STATE } from './modelActions';
+
 import {
   getAccounts,
   getGroupings,
@@ -88,6 +90,7 @@ const initAuth = userInfo => {
 
 const initLogOut = () => dispatch => {
   removeToken();
+  dispatch({type: RESTORE_TO_INITIAL_STATE});
   dispatch({ type: INIT_LOGOUT });
 };
 

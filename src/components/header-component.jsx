@@ -39,6 +39,7 @@ import {
 } from "./../actionCreators/filterActionCreators";
 import Spinner from "react-spinkit";
 import bps from './../selectors/currentBudgetPeriod';
+import DropDown from './dropdown';
 
 import "./heading.css";
 
@@ -69,6 +70,8 @@ class HeaderComponent extends Component {
         </p>
       </Alert>
     );
+
+    selectAccount = _id => () => {this.props.selectAccount(_id)};
 
   formatRoute = route => {
     switch (route) {
@@ -163,8 +166,9 @@ class HeaderComponent extends Component {
   };
 
   signUp = formProps => {
-    const { email, password, name } = formProps;
+    const { email, password, name, reset } = formProps;
     this.props.signUp({ email, password, name });
+    reset();
   };
 
   renderCreateButton = () => {
@@ -202,7 +206,6 @@ class HeaderComponent extends Component {
   //   {this.formatRoute(this.props.currentRoute)}
   // </NavItem>
   render() {
-    console.log(this.props.curbps);
     const { handleSubmit, pristine, reset, submitting } = this.props;
 
     if (!this.props.authenticated && !this.props.fetching && this.state.logIn) {
@@ -248,12 +251,8 @@ class HeaderComponent extends Component {
 
     return (
       <div>
-
-
         <Nav bsStyle="pills" activeKey={1}>
-
           {this.renderCreateButton()}
-
           <NavItem eventKey={8}>
             Total Balance : {this.props.totalBalance}
           </NavItem>
@@ -262,11 +261,11 @@ class HeaderComponent extends Component {
             search
           </NavItem> : ''}
 
-          <NavDropdown eventKey={10} title="accounts">
+          <NavDropdown id="accounts" eventKey={10} title="accounts">
 
             {_.map(this.props.accounts, account => {
               return (
-                <MenuItem
+                <MenuItem key={account._id}
                   eventKey="4.4"
                   onClick={() => {
                     this.setState({ selectAccount: account._id });
@@ -280,11 +279,13 @@ class HeaderComponent extends Component {
             })}
           </NavDropdown>
 
-          <NavDropdown eventKey={10} title="groupings">
+          <DropDown collection={this.props.accounts} title='Account' onClickHandler={this.selectAccount} selected = {this.props.selectedAccount}/>
+
+          <NavDropdown id="groupings" eventKey={10} title="groupings">
 
             {_.map(this.props.groupings, grouping => {
               return (
-                <MenuItem
+                <MenuItem key={grouping._id}
                   eventKey="4.4"
                   onClick={() => {
                     this.props.selectGrouping(grouping._id);
@@ -296,9 +297,9 @@ class HeaderComponent extends Component {
               );
             })}
           </NavDropdown>
-            <NavDropdown eventKey={10} title="bps" >
+            <NavDropdown id="bps" eventKey={10} title="bps" >
               {_.map(this.props.curbps, bp => {
-                return (<MenuItem onClick = {() => this.props.selectBudget(bp.budgetId)}
+                return (<MenuItem key={bp._id} onClick = {() => this.props.selectBudget(bp.budgetId)}
                   eventKey="4.2">
                 {bp.name} {bp.comulativeBalance}
                 {this.isSelectedBud(bp.budgetId)}
@@ -309,7 +310,7 @@ class HeaderComponent extends Component {
 
             {_.map(this.props.dates, date => {
               return (
-                <MenuItem
+                <MenuItem key={date}
                   eventKey="4.2"
                   onClick={() => this.props.updateDate(date)}
                 >

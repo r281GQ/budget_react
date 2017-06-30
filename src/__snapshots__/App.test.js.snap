@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders without crashing 1`] = `
+<form>
+  <Field
+    component="input"
+    name="name"
+    placeholder="name"
+    type="text"
+  />
+  <Field
+    component="input"
+    name="initialBalance"
+    placeholder="initialBalance"
+    type="text"
+  />
+  <Field
+    component="input"
+    name="currency"
+    placeholder="currency"
+    type="text"
+  />
+  <Button
+    active={false}
+    block={false}
+    bsClass="btn"
+    bsStyle="default"
+    disabled={false}
+    type="submit"
+  >
+    Create
+  </Button>
+  <Button
+    active={false}
+    block={false}
+    bsClass="btn"
+    bsStyle="default"
+    disabled={false}
+  >
+    Cancel
+  </Button>
+</form>
+`;

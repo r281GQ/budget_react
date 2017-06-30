@@ -61,56 +61,47 @@ class TransactionListContainer extends Component {
 
   onCancelHandler = () => this.props.navigate("/transaction");
 
-  renderTransactionList = () => () => {
-    // if (this.props.loading) return <div />;
-    // if (!this.props.authenticated) return <div />;
-    return (
-      <TransactionList
+  renderTransactionList = () => () =>
+    <TransactionList
+      handlers={{
+        onShowDeleteConsent: this.onShowDeleteConsent,
+        onHideDeleteConsent: this.onHideDeleteConsent,
+        onEditFormSelectedHandler: this.onEditFormSelectedHandler,
+        onDeleteHandler: this.onDeleteHandler
+      }}
+      showDeleteConsent={this.state.showDeleteConsent}
+      selectedId={this.state.selectedId}
+      models={{
+        incomes: this.props.incomes,
+        expenses: this.props.expenses,
+        accounts: this.props.accounts,
+        groupings: this.props.groupings,
+        budgets: this.props.budgets
+      }}
+    />;
+
+  navigateToTransactionList = () => this.props.navigate("/transaction");
+
+  renderEditTransaction = () => ({ match }) =>
+    <div>
+      <EditTransaction
         handlers={{
-          onShowDeleteConsent: this.onShowDeleteConsent,
-          onHideDeleteConsent: this.onHideDeleteConsent,
-          onEditFormSelectedHandler: this.onEditFormSelectedHandler,
-          onDeleteHandler: this.onDeleteHandler
+          updateTransaction: this.props.updateTransaction
         }}
-        showDeleteConsent={this.state.showDeleteConsent}
-        selectedId={this.state.selectedId}
+        loading={this.props.loading}
+        buttonNames={{
+          submit: "Edit",
+          cancel: "Cancel"
+        }}
+        transaction={this.props.transactions[match.params.id]}
+        navigate={this.navigateToTransactionList}
         models={{
-          incomes: this.props.incomes,
-          expenses: this.props.expenses,
           accounts: this.props.accounts,
           groupings: this.props.groupings,
           budgets: this.props.budgets
         }}
       />
-    );
-  };
-
-  navigateToTransactionList = () => this.props.navigate("/transaction");
-
-  renderEditTransaction = () => ({ match }) => {
-    // if(!this.props.transactions[match.params.id]) return <div></div>
-    return (
-      <div>
-        <EditTransaction
-          handlers={{
-            updateTransaction: this.props.updateTransaction
-          }}
-          loading={this.props.loading}
-          buttonNames={{
-            submit: "Edit",
-            cancel: "Cancel"
-          }}
-          transaction={this.props.transactions[match.params.id]}
-          navigate={this.navigateToTransactionList}
-          models={{
-            accounts: this.props.accounts,
-            groupings: this.props.groupings,
-            budgets: this.props.budgets
-          }}
-        />
-      </div>
-    );
-  };
+    </div>;
 
   render() {
     if (this.props.loading || !this.props.authenticated)

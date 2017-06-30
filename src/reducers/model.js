@@ -24,7 +24,8 @@ import {
   WRITE_BUDGET,
   WRITE_BUDGETS,
   REMOVE_BUDGET,
-  WIPE_BUDGETS
+  WIPE_BUDGETS,
+  RESTORE_TO_INITIAL_STATE
 } from "./../actions/modelActions";
 
 const DANGER = "danger";
@@ -239,8 +240,31 @@ const handleWriteBudgets = (state, payload) => {
   return newState;
 };
 
+const handleRemoveBudget = (state, payload) => {
+  let newState = _.cloneDeep(state);
+  delete newState.budgets.data[payload];
+
+
+  _.forEach(newState.transactions.data, tx => {
+    if(tx.budget === payload)
+      delete tx.budget;
+  });
+
+  if (_.isEmpty(newState.groupings.data)) {
+    newState.groupings.data[0] = {
+      name: "no budget",
+      _id: 0
+    };
+  }
+  return newState;
+};
+
+
+
 const model = (state = initialModelState, { type, payload }) => {
   switch (type) {
+    case RESTORE_TO_INITIAL_STATE:
+      return initialModelState;
     case REMOVE_TRANSACTION:
       return handleRemoveTransaction(state, payload);
     case WRITE_TRANSACTION:
@@ -281,6 +305,8 @@ const model = (state = initialModelState, { type, payload }) => {
       return handleWriteBudget(state, payload);
     case WRITE_BUDGETS:
       return handleWriteBudgets(state, payload);
+      case REMOVE_BUDGET:
+        return handleRemoveBudget(state, payload);
     default:
       return state;
   }

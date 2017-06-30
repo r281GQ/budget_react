@@ -18,6 +18,7 @@ const equity = state => state.filter.equity;
 
 const budget = state => state.filter.budget;
 
+//TODO: replace === to isSame with momemnt.js
 const selectorFactory = type => (
   transactions,
   groupings,
@@ -27,9 +28,7 @@ const selectorFactory = type => (
   grouping,
   budget
 ) => {
-  console.log(budget);
   return _.filter(transactions, transaction => {
-    console.log(transaction.budget);
     if (!transaction.grouping) return false;
     if (!groupings[transaction.grouping]) return false;
     return (

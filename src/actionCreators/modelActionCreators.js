@@ -568,14 +568,78 @@ const getBudgets = () => (dispatch, getState) => {
     });
 };
 
+
+//TODO: doesnt need getTransactions neithor here noe in account grouping deleteions
 const deleteBudget = _id => (dispatch, getState) => {
   if (!getState().auth.authenticated) return;
   dispatch({ type: INIT_API });
+  axios({
+    url: `${BASE_URL}/budget/${_id}`,
+    method: "DELETE",
+    timeout: 1000,
+    headers: {
+      "x-auth": getState().auth.token
+    }
+  })
+    .then(response => {
+      dispatch({ type: REMOVE_BUDGET, payload: _id });
+      return axios(getAccountsConfigCreator(getState));
+    })
+    .then(response => {
+      dispatch({ type: WIPE_ACCOUNTS });
+      dispatch({ type: WRITE_ACCOUNTS, payload: response.data });
+      dispatch({
+        type: CREATE_SUCCESS_MESSAGE,
+        payload: `Budget was removed!`
+      });
+      dispatch({ type: CLOSE_API });
+    //   return axios(getTransactionsConfigCreator(getState));
+    })
+    // .then(response => {
+    //   dispatch({ type: WIPE_TRANSACTIONS });
+    //   dispatch({ type: WRITE_TRANSACTIONS, payload: response.data });
+    // })
+    .catch(error => {
+      dispatch({ type: CLOSE_API });
+      dispatch({
+        type: CREATE_ERROR_MESSAGE,
+        payload: `Couldn't delete budget!`
+      });
+    });
 };
 
-const updateBudget = ({ defaultAllowance, name }) => (dispatch, getState) => {
+const updateBudget = ({_id, name }) => (dispatch, getState) => {
   if (!getState().auth.authenticated) return;
   dispatch({ type: INIT_API });
+
+  axios({
+    url: `${BASE_URL}/budget`,
+    method: "PUT",
+    timeout: 1000,
+    data: {
+      name,
+      _id
+    },
+    headers: {
+      "x-auth": getState().auth.token
+    }
+  })
+    .then(response => {
+      dispatch({ type: WRITE_BUDGET, payload: response.data });
+      dispatch({ type: CLOSE_API });
+
+      dispatch({
+        type: CREATE_SUCCESS_MESSAGE,
+        payload: `Budget was created!`
+      });
+    })
+    .catch(error => {
+      dispatch({ type: CLOSE_API });
+      dispatch({
+        type: CREATE_ERROR_MESSAGE,
+        payload: `Couldn't create budget!`
+      });
+    });
 };
 
 const createBudget = ({ name, defaultAllowance, currency }) => (

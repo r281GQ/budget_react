@@ -15,7 +15,9 @@ const SignUp = ({ handleSignup, toggleLogIn }) =>
       />
       <Field type="text" name="name" component={InputField} label="Name" />
       <input className="btn btn-default" value="Sign Up" type="submit" />
-      <button className="btn btn-default" onClick={toggleLogIn}>Log In</button>
+      <button className="btn btn-default" onClick={toggleLogIn}>
+        Log In
+      </button>
     </form>
   </div>;
 

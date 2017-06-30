@@ -51,24 +51,28 @@ class CreateTransactionContainer extends Component {
         _error: "balance"
       });
     }
-    let parsedGrouping = Number.parseInt(budget);
+    let parsedBudget = Number.parseInt(budget);
     if (
-      parsedGrouping !== 0 &&
+      parsedBudget !== 0 &&
       this.props.groupings[grouping].type === "income"
     )
       throw new SubmissionError({
         budget: "Budget cannot be assigned to incomes",
         _error: "budget"
       });
-    this.props.createTransaction({
-      name,
-      amount,
-      currency,
-      account,
-      grouping,
-      memo,
-      budget
-    });
+      let transaction = {
+        name,
+        amount,
+        currency,
+        account,
+        grouping,
+        memo
+      };
+      console.log(budget);
+      if(parsedBudget !== 0)
+        transaction.budget = budget;
+        console.log(transaction);
+    this.props.createTransaction(transaction);
   };
 
   navigateToTransactionList = () => this.props.navigate("/transaction");
